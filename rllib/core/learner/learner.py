@@ -699,7 +699,7 @@ class Learner(Checkpointable):
         }
 
     @abc.abstractmethod
-    def get_param_ref(self, param: Param) -> Hashable:
+    def get_param_ref(self, param: Param) -> ParamRef:
         """Returns a hashable reference to a trainable parameter.
 
         This should be overridden in framework specific specialization. For example in
