@@ -47,8 +47,9 @@ def test_distributed_tqdm_local():
     mgr = tqdm_ray.instance()
     mgr.bar_groups.clear()
 
-    bar = tqdm_ray.tqdm(desc="bar", total=100, position=0, flush_interval_s=0)
-    bar.update(42)
+    pbar = tqdm_ray.tqdm(desc="bar", total=100, position=0, flush_interval_s=0)
+    pbar.update(42)
+    assert pbar.n == 42
     wait_for_condition(lambda: len(mgr.bar_groups) == 1)
     assert len(mgr.bar_groups) == 1
     bar_group = list(mgr.bar_groups.values())[0]
