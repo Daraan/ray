@@ -1,7 +1,6 @@
 # Example demonstrating how to use Trial.checkpoint_now() in a tuner callback
-# for smart checkpointing logic. Unlike the basic custom_func_checkpointing.py 
-# example, this shows how to trigger checkpointing from callbacks based on 
-# training progress rather than fixed intervals.
+# for smart checkpointing logic. This shows how to trigger checkpointing from
+# callbacks based on training progress rather than fixed intervals.
 
 import argparse
 import json
@@ -11,7 +10,7 @@ import time
 from ray import tune
 from ray.tune import Callback
 
-
+# Some dummy function
 def evaluation_fn(step, width, height):
     time.sleep(0.1)
     return (0.1 + width * step / 100) ** (-1) + height * 0.1
@@ -20,7 +19,7 @@ def evaluation_fn(step, width, height):
 class SmartCheckpointCallback(Callback):
     """Custom callback that triggers checkpointing using Trial.checkpoint_now()
     
-    This callback demonstrates advanced checkpointing logic that goes beyond
+    This callback demonstrates checkpointing logic beyond
     simple periodic checkpointing. It checkpoints based on performance improvements
     or when the loss becomes unstable.
     """
@@ -37,7 +36,7 @@ class SmartCheckpointCallback(Callback):
         self.recent_losses_per_trial = {}
     
     def on_trial_result(self, iteration, trials, trial, result, **info):
-        """Called after receiving a result from a trial.
+        """Called after receiving a result from the trainable.
         
         This hook implements intelligent checkpointing logic:
         1. Checkpoint when we see significant improvement
@@ -166,7 +165,7 @@ if __name__ == "__main__":
         OptimizationTrainable,
         run_config=tune.RunConfig(
             name="smart_checkpoint_test",
-            stop={"training_iteration": 1 if args.smoke_test else 30},
+            stop={"training_iteration": 1 if args.smoke_test else 20},
             callbacks=[checkpoint_callback],  # Add our custom callback
             # Disable automatic periodic checkpointing to show callback control
             checkpoint_config=tune.CheckpointConfig(
