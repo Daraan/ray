@@ -25,7 +25,7 @@ class SmartCheckpointCallback(Callback):
     or when the loss becomes unstable.
     """
     
-    def __init__(self, checkpoint_on_improvement=True, checkpoint_on_instability=True):
+    def __init__(self, *, checkpoint_on_improvement=True, checkpoint_on_instability=True):
         """
         Args:
             checkpoint_on_improvement: Checkpoint when loss improves significantly
