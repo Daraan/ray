@@ -1,6 +1,7 @@
 # Example demonstrating how to use Trial.checkpoint_now() in a tuner callback
-# for custom checkpointing logic. The callback triggers checkpointing on demand
-# instead of using fixed intervals.
+# for smart checkpointing logic. Unlike the basic custom_func_checkpointing.py 
+# example, this shows how to trigger checkpointing from callbacks based on 
+# training progress rather than fixed intervals.
 
 import argparse
 import json
@@ -140,6 +141,21 @@ if __name__ == "__main__":
     )
     args, _ = parser.parse_known_args()
 
+    print("=" * 60)
+    print("Ray Tune Example: Smart Checkpointing with Trial.checkpoint_now()")
+    print("=" * 60)
+    print()
+    print("This example demonstrates how to use Trial.checkpoint_now() in a callback")
+    print("to implement intelligent checkpointing based on training progress.")
+    print()
+    print("Key features:")
+    print("- Callback-driven checkpointing using trial.checkpoint_now()")
+    print("- Checkpoints triggered by performance improvements")
+    print("- Milestone-based checkpointing every 10 steps")
+    print("- Instability detection (high variance in recent losses)")
+    print("- Automatic checkpoint save/load via class trainable")
+    print()
+
     # Create the smart checkpoint callback
     checkpoint_callback = SmartCheckpointCallback(
         checkpoint_on_improvement=True,
@@ -168,8 +184,19 @@ if __name__ == "__main__":
             "height": tune.loguniform(10, 100),
         },
     )
+    
+    print("Starting hyperparameter tuning with smart checkpointing...")
+    print("Watch for checkpoint messages triggered by the callback!")
+    print()
+    
     results = tuner.fit()
     best_result = results.get_best_result()
+    print("\n" + "=" * 60)
+    print("RESULTS")
+    print("=" * 60)
     print("Best hyperparameters: ", best_result.config)
     best_checkpoint = best_result.checkpoint
     print("Best checkpoint: ", best_checkpoint)
+    print()
+    print("The checkpoints were triggered by the SmartCheckpointCallback")
+    print("using trial.checkpoint_now() based on training progress!")
