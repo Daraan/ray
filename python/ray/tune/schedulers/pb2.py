@@ -1,6 +1,14 @@
 import logging
 from copy import deepcopy
-from typing import TYPE_CHECKING, Callable, Dict, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Annotated,
+    Callable,
+    Dict,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 import pandas as pd
@@ -13,6 +21,8 @@ from ray.tune.utils.util import flatten_dict, unflatten_dict
 from ray.util.debug import log_once
 
 if TYPE_CHECKING:
+    import GPy.models
+
     from ray.tune.execution.tune_controller import TuneController
 
 
@@ -29,6 +39,7 @@ def import_pb2_dependencies():
 
 
 GPy, has_sklearn = import_pb2_dependencies()
+
 
 if GPy and has_sklearn:
     from ray.tune.schedulers.pb2_utils import (
@@ -76,10 +87,10 @@ def _fill_config(
 
 
 def _select_config(
-    Xraw: np.array,
-    yraw: np.array,
+    Xraw: np.ndarray,
+    yraw: np.ndarray,
     current: list,
-    newpoint: np.array,
+    newpoint: Annotated[object, "tuple-like of length 2"],
     bounds: dict,
     num_f: int,
 ) -> np.ndarray:
@@ -352,14 +363,13 @@ class PB2(PopulationBasedTraining):
         metric: Optional[str] = None,
         mode: Optional[str] = None,
         perturbation_interval: float = 60.0,
-        hyperparam_bounds: Dict[str, Union[dict, list, tuple]] = None,
+        hyperparam_bounds: Optional[Dict[str, Union[dict, list, tuple]]] = None,
         quantile_fraction: float = 0.25,
         log_config: bool = True,
         require_attrs: bool = True,
         synch: bool = False,
         custom_explore_fn: Optional[Callable[[dict], dict]] = None,
     ):
-
         gpy_available, sklearn_available = import_pb2_dependencies()
         if not gpy_available:
             raise RuntimeError("Please install GPy to use PB2.")
@@ -500,8 +510,8 @@ class PB2(PopulationBasedTraining):
 
         if self._custom_explore_fn:
             new_config = self._custom_explore_fn(new_config)
-            assert (
-                new_config is not None
-            ), "Custom explore function failed to return a new config"
+            assert new_config is not None, (
+                "Custom explore function failed to return a new config"
+            )
 
         return new_config, {}
